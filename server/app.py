@@ -106,12 +106,42 @@ api.add_resource(LogoutUser, '/auth/logout')
 class FetchTasks(Resource):
     #/tasks
     def get(self):
-        tasks = [task.to_dict() for task in Task.query.all()]
+        #access the user_id 
+        user_id = session.get('user_id')
+        
+        #verify is the user is logged in 
+        if user_id is None:
+            response = make_response(
+                jsonify({"Error": "Unauthorized Access"}),
+                401
+            )
+            return response
+        
+        # fetch tasks based on the user
+        user = User.query.get(user_id)
+        print(user)
+        if user is None:
+            response = make_response(
+                jsonify({"Error": "User not found"}),
+                404
+            )
+            return response
+
+        tasks = [task.to_dict() for task in user.tasks]
+        
+        if len(tasks) == 0:
+            response = make_response(
+                jsonify({"Message": "You do not have any tasks created!"}),
+                200
+            )
+            return response
+        
         response = make_response(
             jsonify(tasks),
             200
         )
         return response
+    
     #/tasks payload({title,description, priority, due_date, status, user_id})
     def post(self):
         data = request.get_json()
