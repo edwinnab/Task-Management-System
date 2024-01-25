@@ -10,12 +10,13 @@ import os
 #create the app instance
 app = Flask(__name__)
 
+
 #app secret key
 secret_key = os.environ.get('SECRET_KEY') or os.urandom(24)
 app.secret_key = secret_key
 
 #config the database
-app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///todo.db'
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get('DATABASE_URI')
 #create the migrations 
 migrate = Migrate(app, db)
 #create the API instance
@@ -24,6 +25,7 @@ bcrypt = Bcrypt(app)
 
 #connect the db
 db.init_app(app)
+
 
 #user management
 class RegisterUser(Resource):
@@ -65,7 +67,7 @@ api.add_resource(RegisterUser, '/auth/register')
 class LoginUser(Resource):
     def post(self):
         data = request.get_json()
-        email = data['email']
+        email = data['email']  #request.get_json()
         password = data['password']
         
         user = User.query.filter(User.email == email).first()

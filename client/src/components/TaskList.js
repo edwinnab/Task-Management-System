@@ -37,20 +37,22 @@ const TaskList = () => {
 
        <>
             {
-                tasks.map((item) => {
-                    return (
-                        <TaskCard 
-                            key={item.id}
-                            id = {item.id}
-                            title={item.title}
-                            description={item.description}
-                            priority={item.priority}
-                            due_date={item.due_date}
-                            status={item.status}
-                            newTasks={fetchTasks}
-                        />
-                    )
-                })
+                tasks.length > 0 ? (
+                    tasks.map((item) => (
+                            <TaskCard 
+                                key={item.id}
+                                id = {item.id}
+                                title={item.title}
+                                description={item.description}
+                                priority={item.priority}
+                                due_date={item.due_date}
+                                status={item.status}
+                                newTasks={fetchTasks}
+                            />
+                    ) )
+                ) : (
+                    <p className="text-base font-semibold leading-6 text-gray-900 m-4" >No tasks available</p>
+                )
             }
        </>
 

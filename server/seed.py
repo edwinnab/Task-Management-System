@@ -25,8 +25,7 @@ with app.app_context():
             description = fake.sentence(),
             priority = random.choice(priorities),
             due_date = fake.date_between_dates(today, next_thursday),
-            status = random.choice(statuses),
-            user_id = random.randint(1,5)
+            status = random.choice(statuses)
         )
         tasks.append(task)
     db.session.add_all(tasks)

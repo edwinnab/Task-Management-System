@@ -12,6 +12,10 @@ flask-migrate = "*"
 faker = "*"
 flask-restful = "*"
 flask-bcrypt = "*"
+gunicorn = "*"
+psycopg2-binary = "*"
+portalocker = "*"
+waitress = "*"
 
 [dev-packages]
 
