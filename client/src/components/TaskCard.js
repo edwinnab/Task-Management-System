@@ -32,7 +32,11 @@ const TaskCard = ({id, title, description, priority, due_date, status, newTasks}
             },
             body: JSON.stringify(formData)
         })
-        .then(res => res.json())
+        .then(res => {
+            res.json()
+            alert("Added successfull!")
+            navigate("/tasks")
+        })
         .then(data => toggleForm())
         .catch(error => console.error("Error Data: ", error))
     }
