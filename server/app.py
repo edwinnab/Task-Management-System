@@ -1,4 +1,4 @@
-from flask import Flask, make_response, jsonify, request, session
+from flask import Flask, make_response, jsonify, request, session, render_template
 from database import db
 from flask_migrate import Migrate
 from models import Task, User
@@ -12,7 +12,12 @@ load_dotenv()
 
 
 #create the app instance
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    static_url_path="",
+    static_folder='../client/build',
+    template_folder='../client/build'
+    )
 
 
 #app secret key
@@ -23,16 +28,15 @@ app.secret_key = secret_key
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get('DATABASE_URI')
 #create th.e migrations 
 migrate = Migrate(app, db)
-#create the API instance
-api = Api(app)
-
-
 #connect the db
 db.init_app(app)
 
-@app.route("/")
-def index():
-    return "<h1>Hello</h1>"
+@app.errorhandler(404)
+def not_found(e):
+    return render_template("index.html")
+
+#create the API instance
+api = Api(app)
 
 #user management
 class RegisterUser(Resource):
@@ -277,8 +281,5 @@ class TaskById(Resource):
         return response
 api.add_resource(TaskById, '/tasks/<int:id>')
         
-            
-
-
 if __name__ == "__main__":
     app.run(port=5555, debug=True)
