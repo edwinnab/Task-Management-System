@@ -34,13 +34,13 @@ const TaskCard = ({id, title, description, priority, due_date, status, newTasks}
             },
             body: JSON.stringify(formData)
         })
-        .then(res => {
-            res.json()
-            alert("Added successfull!")
-            navigate("/tasks")
+        .then((res) => {
+            if(res.ok) {
+                res.json()
+                navigate('/tasks')
+            }
         })
-        .then(data => toggleForm())
-        .catch(error => console.error("Error Data: ", error))
+        .catch((error) => console.error("Error Data: ", +error))
     }
 
     const handleDelete = () => {
