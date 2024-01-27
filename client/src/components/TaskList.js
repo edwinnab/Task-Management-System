@@ -1,20 +1,20 @@
 import TaskCard from "./TaskCard"
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useNavigate } from "react-router-dom"
 
 const TaskList = () => {
     const [tasks, setTasks] = useState([])
     const navigate = useNavigate()
 
-    const fetchTasks = () => {
+    const fetchTasks = useCallback(() => {
         fetch("/tasks")
         .then((res) => {
             if(res.ok) {
-                return res.json()
+                return res.json();
             } 
             if(res.status === 401 || res.status === 404) {
-                alert("Unauthorized Access")
-                navigate('/')
+                alert("Unauthorized Access");
+                navigate('/');
             }
         })
         .then(data => {
@@ -22,15 +22,15 @@ const TaskList = () => {
                 alert("You do not have any tasks created!");
                 navigate('/task-form');
             } else {
-                setTasks(data)
+                setTasks(data);
             }
         })
-        .catch(error => console.error("Error Data: " + error))
-    }
+        .catch(error => console.error("Error Data: " + error));
+    }, [navigate]);
 
     useEffect(() => {
         fetchTasks()
-    }, [navigate])
+    }, [fetchTasks])
 
     
     return (
