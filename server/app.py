@@ -3,9 +3,13 @@ from database import db
 from flask_migrate import Migrate
 from models import Task, User
 from flask_restful import Resource, Api
-from flask_bcrypt import Bcrypt
 from datetime import datetime
 import os
+from dotenv import load_dotenv
+import bcrypt
+
+load_dotenv()
+
 
 #create the app instance
 app = Flask(__name__)
@@ -17,15 +21,18 @@ app.secret_key = secret_key
 
 #config the database
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get('DATABASE_URI')
-#create the migrations 
+#create th.e migrations 
 migrate = Migrate(app, db)
 #create the API instance
 api = Api(app)
-bcrypt = Bcrypt(app)
+
 
 #connect the db
 db.init_app(app)
 
+@app.route("/")
+def index():
+    return "<h1>Hello</h1>"
 
 #user management
 class RegisterUser(Resource):
@@ -44,13 +51,16 @@ class RegisterUser(Resource):
                 409
             )
             return response
+
+        password_hash = bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt(12))
         
-        password_hash = bcrypt.generate_password_hash(password)
         new_user = User(
             full_name = full_name,
             email = email,
-            password = password_hash
+            password = password_hash.decode('utf8')
         )
+        
+        print(new_user)
         db.session.add(new_user)
         db.session.commit()
         
@@ -67,32 +77,41 @@ api.add_resource(RegisterUser, '/auth/register')
 class LoginUser(Resource):
     def post(self):
         data = request.get_json()
-        email = data['email']  #request.get_json()
+        email = data['email']
         password = data['password']
         
         user = User.query.filter(User.email == email).first()
         
+        print(user)
         if user is None:
             response = make_response(
                 jsonify({"Error": "Unauthorized Access"}),
                 401
             )
             return response
-        if not bcrypt.check_password_hash(user.password, password):
+        
+        
+        # Assuming the password is stored securely hashed in the database
+        hashed_password = user.password
+        print(hashed_password)
+        # Check if passwords match
+        if bcrypt.checkpw(password.encode('utf8'), hashed_password.encode("utf8")):
+            session['user_id'] = user.id
+            response = make_response(
+                jsonify({"Message": "Login Successful!"}),
+                201
+            )
+            response.headers['Content-Type'] = 'application/json'
+            return response
+        else:
             response = make_response(
                 jsonify({"Error": "Incorrect Password"}),
                 401
             )
             return response
-        
-        session['user_id'] = user.id
-        response = make_response(
-            jsonify({"Message": "Login Successful!"}),
-            201
-        )
-        response.headers['Content-Type'] = 'application/json'
-        return response
+
 api.add_resource(LoginUser, '/auth/login')
+
 
 class LogoutUser(Resource):
     def delete(self):

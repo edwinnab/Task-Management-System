@@ -11,7 +11,7 @@ class User(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     full_name = db.Column(db.String)
     email = db.Column(db.String)
-    password = db.Column(db.String)
+    password = db.Column(db.String, nullable=False)
     
     #define the realtionship
     # user can have many tasks
