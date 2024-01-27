@@ -1,0 +1,6 @@
+web: set PORT=3000 && npm start --prefix client
+api: cd ./server && waitress-serve --host 127.0.0.1 --port 5555 app:app
+
+
+
+ 
