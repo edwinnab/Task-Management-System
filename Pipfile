@@ -16,6 +16,8 @@ gunicorn = "*"
 psycopg2-binary = "*"
 portalocker = "*"
 waitress = "*"
+python-dotenv = "*"
+honcho = "*"
 
 [dev-packages]
 
