@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import EditForm from "../components/EditForm"
+import { useNavigate } from 'react-router-dom'
 
 const TaskCard = ({id, title, description, priority, due_date, status, newTasks}) => {
 
     const [showForm, setShowForm] = useState(false)
+    const navigate = useNavigate()
 
     const [formData, setFormData ] = useState({
         title,
